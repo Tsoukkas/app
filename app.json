@@ -80,7 +80,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "org.citizensinpower.f4ac",
+      "package": "com.andonis1213.clerkexpo",
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyAvUiwqPvhqdm5JGUUciJnZJiIa3MmrD1g"
