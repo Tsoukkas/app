@@ -20,7 +20,12 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.andonis1213.clerkexpo"
+      "package": "com.andonis1213.clerkexpo",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAvUiwqPvhqdm5JGUUciJnZJiIa3MmrD1g"
+        }
+      }
     },
     "web": {
       "output": "static",
