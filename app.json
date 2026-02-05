@@ -1,10 +1,11 @@
+/*
 {
   "expo": {
     "name": "clerk-expo",
     "slug": "clerk-expo",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/app-logo.png",
     "scheme": "clerkexpo",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -30,6 +31,65 @@
     "web": {
       "output": "static",
       "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff",
+          "dark": {
+            "backgroundColor": "#000000"
+          }
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "4e18bf56-ea78-48e7-83ac-e192104eb58a"
+      }
+    }
+  }
+}
+*/
+{
+  "expo": {
+    "name": "F4AC",
+    "slug": "football-for-a-chance",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/app-logo.png",
+    "scheme": "f4ac",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/app-logo.png",
+        "backgroundColor": "#E6F4FE"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "org.citizensinpower.f4ac",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAvUiwqPvhqdm5JGUUciJnZJiIa3MmrD1g"
+        }
+      }
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/app-logo.png"
     },
     "plugins": [
       "expo-router",
