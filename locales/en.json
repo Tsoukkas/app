@@ -1,0 +1,175 @@
+{
+  "map": {
+    "title": "Map",
+    "subtitle": "Sports Facilities, Courts & Resources",
+    "close": "Close",
+    "web": {
+      "title": "Map available on mobile only",
+      "subtitle": "react-native-maps is not supported on web. Use Android/iOS to see the interactive map."
+    },
+    "places": {
+      "1": {
+        "title": "Basketball Court",
+        "description": "Open daily 08:00–22:00"
+      },
+      "2": {
+        "title": "Football Field",
+        "description": "Free entry • Parking nearby"
+      },
+      "3": {
+        "title": "Tennis Court",
+        "description": "Booking required"
+      }
+    }
+  },
+
+  "profile": {
+    "title": "Profile",
+    "generalSettings": "General Settings",
+    "information": "Information",
+    "account": "Account",
+    "interests": "Interests",
+    "changePassword": "Change Password",
+    "language": "Language",
+    "aboutApp": "About App",
+    "terms": "Terms & Conditions",
+    "gdpr": "GDPR",
+    "signOut": "Sign out",
+    "signOutConfirmTitle": "Sign out",
+    "signOutConfirmMsg": "Are you sure you want to sign out?",
+    "cancel": "Cancel",
+    "comingSoonTitle": "Coming soon",
+    "comingSoonMsg": "This feature will be available soon."
+  },
+
+  "password": {
+    "title": "Change Password",
+    "current": "Current password",
+    "new": "New password",
+    "confirm": "Confirm new password",
+    "save": "Update password",
+    "saving": "Updating...",
+    "successTitle": "Success",
+    "successMsg": "Your password has been updated.",
+    "errorTitle": "Error",
+    "errorGeneric": "Something went wrong. Please try again.",
+    "errorMismatch": "Passwords do not match.",
+    "errorTooShort": "Password must be at least {{min}} characters."
+  },
+
+  "auth": {
+    "login": {
+      "title": "Login",
+      "subtitle": "Please sign in to continue",
+      "identifier": "Username / Email",
+      "password": "Password",
+      "remember": "Remember me",
+      "signIn": "Sign In",
+      "signingIn": "Signing in...",
+      "noAccount": "Don’t have an account?",
+      "signUp": "Sign up"
+    },
+    "register": {
+      "title": "Register",
+      "subtitle": "Sign in to continue",
+      "alreadyRegistered": "Already registered?",
+      "loginHere": "Log in here.",
+      "nameLabel": "NAME",
+      "surnameLabel": "SURNAME",
+      "emailLabel": "EMAIL",
+      "passwordLabel": "PASSWORD",
+      "name": "Name",
+      "surname": "Surname",
+      "email": "Email",
+      "password": "Password",
+      "signUp": "Sign up",
+      "creating": "Creating..."
+    },
+    "errors": {
+      "signInFailed": "Sign in failed",
+      "signUpFailed": "Sign up failed"
+    }
+  },
+
+  "explore": {
+    "title": "Videos / Impact Stories",
+    "impactStory": "Impact Story #{{num}}"
+  },
+
+  "knowledge": {
+    "modules": "Modules",
+    "resources": "Resources",
+    "categories": "Categories",
+    "notFound": "Content not found",
+    "badge": {
+      "module": "Module",
+      "resource": "Resource"
+    },
+    "category": {
+      "1": "Category 1",
+      "2": "Category 2",
+      "3": "Category 3",
+      "5": "Category 5"
+    },
+    "items": {
+      "module-1": {
+        "title": "Module 1",
+        "content": "This is Module 1.\n\nHere you explain the theory, objectives and activities."
+      },
+      "module-2": {
+        "title": "Module 2",
+        "content": "This is Module 2.\n\nMore educational content goes here."
+      },
+      "module-3": {
+        "title": "Module 3",
+        "content": "This is Module 3.\n\nMore educational content goes here."
+      },
+      "resource-1": {
+        "title": "Resources 1",
+        "content": "Resources for coaches.\n\nLinks, documents and guidelines."
+      },
+      "resource-2": {
+        "title": "Resources 2",
+        "content": "More resources.\n\nLinks, documents and guidelines."
+      }
+    }
+  },
+
+  "screens": {
+    "gdpr": "GDPR",
+    "terms": "Terms & Conditions",
+    "about": "About the App",
+    "language": "Language"
+  },
+
+  "language": {
+    "choose": "Choose language",
+    "english": "English",
+    "greek": "Greek",
+    "saved": "Language updated"
+  },
+
+  "legal": {
+    "gdpr": {
+      "title": "GDPR",
+      "paragraphs": [
+        "Write your GDPR text here (paragraph 1).",
+        "Write your GDPR text here (paragraph 2)."
+      ]
+    },
+    "terms": {
+      "title": "Terms & Conditions",
+      "paragraphs": [
+        "Write your Terms & Conditions text here (paragraph 1).",
+        "Write your Terms & Conditions text here (paragraph 2)."
+      ]
+    },
+    "about": {
+      "title": "About the App",
+      "paragraphs": [
+        "Write your About text here (paragraph 1).",
+        "Write your About text here (paragraph 2)."
+      ]
+    }
+  }
+}
