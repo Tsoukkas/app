@@ -148,6 +148,46 @@
     "greek": "Greek",
     "saved": "Language updated"
   },
+  "faq": {
+    "title": "Help Bot",
+    "options": "Options",
+    "close": "Close",
+
+    "nodes": {
+      "start": {
+        "title": "Start",
+        "answer": "Hi! Choose a topic 👇"
+      },
+      "account": {
+        "title": "Account / Login",
+        "answer": "What do you need help with?"
+      },
+      "reset_password": {
+        "title": "Forgot password",
+        "answer": "Use the 'Forgot password' option on login."
+      },
+      "change_language": {
+        "title": "Change language",
+        "answer": "Go to Profile → Language."
+      },
+      "map": {
+        "title": "Map not showing",
+        "answer": "Make sure you run on Android/iOS and have location enabled."
+      },
+      "privacy": {
+        "title": "Privacy / GDPR",
+        "answer": "You can find GDPR info in Profile → Terms / GDPR."
+      },
+      "contact": {
+        "title": "Contact",
+        "answer": "Check the About page for contact details."
+      },
+      "back": {
+        "title": "⬅ Back",
+        "answer": "Ok! Choose a topic 👇"
+      }
+    }
+  },
 
   "legal": {
     "gdpr": {

@@ -1,14 +1,14 @@
-// components/FaqBot.tsx
 import { FAQ_NODES } from "@/data/faq";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
-    Modal,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 
 type Msg = { from: "bot" | "user"; text: string };
@@ -17,39 +17,48 @@ export function FaqBot({
   hidden = false,
   initialNodeId = "start",
 }: {
-  hidden?: boolean; // όταν true, φεύγει τελείως από την οθόνη
+  hidden?: boolean;
   initialNodeId?: string;
 }) {
-  const [open, setOpen] = useState(false);
+  const { t, i18n } = useTranslation();
 
-  // state του “flow”
+  const [open, setOpen] = useState(false);
   const [nodeId, setNodeId] = useState(initialNodeId);
+
+  const nodeTitle = (id: string) => t(FAQ_NODES[id].titleKey);
+  const nodeAnswer = (id: string) => t(FAQ_NODES[id].answerKey);
+
   const [messages, setMessages] = useState<Msg[]>(() => [
-    { from: "bot", text: FAQ_NODES[initialNodeId].answer },
+    { from: "bot", text: nodeAnswer(initialNodeId) },
   ]);
 
   const node = FAQ_NODES[nodeId];
 
   const options = useMemo(() => {
-    const ids = node.next ?? [];
+    const ids = node?.next ?? [];
     return ids.map((id) => FAQ_NODES[id]).filter(Boolean);
   }, [node]);
 
   const reset = () => {
     setNodeId(initialNodeId);
-    setMessages([{ from: "bot", text: FAQ_NODES[initialNodeId].answer }]);
+    setMessages([{ from: "bot", text: nodeAnswer(initialNodeId) }]);
   };
 
+  // Update messages when language or initial node changes so translations refresh
+  useEffect(() => {
+    reset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18n.language, initialNodeId]);
+
   const pick = (nextId: string) => {
-    const picked = FAQ_NODES[nextId];
-    if (!picked) return;
+    if (!FAQ_NODES[nextId]) return;
 
-    // user bubble
-    setMessages((m) => [...m, { from: "user", text: picked.title }]);
-
-    // move node + bot answer
     setNodeId(nextId);
-    setMessages((m) => [...m, { from: "bot", text: picked.answer }]);
+    setMessages((m) => [
+      ...m,
+      { from: "user", text: nodeTitle(nextId) },
+      { from: "bot", text: nodeAnswer(nextId) },
+    ]);
   };
 
   if (hidden) return null;
@@ -81,7 +90,9 @@ export function FaqBot({
             <View style={styles.header}>
               <View style={styles.headerLeft}>
                 <MaterialIcons name="smart-toy" size={20} color="#111827" />
-                <Text style={styles.headerTitle}>FAQ Bot</Text>
+                <Text style={styles.headerTitle}>
+                  {t("faq.title", { defaultValue: "Help Bot" })}
+                </Text>
               </View>
 
               <View style={styles.headerRight}>
@@ -92,6 +103,7 @@ export function FaqBot({
                 >
                   <MaterialIcons name="refresh" size={18} color="#111827" />
                 </Pressable>
+
                 <Pressable
                   onPress={() => setOpen(false)}
                   hitSlop={10}
@@ -115,14 +127,24 @@ export function FaqBot({
                     m.from === "user" ? styles.userBubble : styles.botBubble,
                   ]}
                 >
-                  <Text style={styles.bubbleText}>{m.text}</Text>
+                  <Text
+                    style={[
+                      styles.bubbleText,
+                      m.from === "user" ? styles.userBubbleText : null,
+                    ]}
+                  >
+                    {m.text}
+                  </Text>
                 </View>
               ))}
             </ScrollView>
 
-            {/* Quick replies (no keyboard) */}
+            {/* Quick replies */}
             <View style={styles.quickWrap}>
-              <Text style={styles.quickTitle}>Επιλογές</Text>
+              <Text style={styles.quickTitle}>
+                {t("faq.options", { defaultValue: "Options" })}
+              </Text>
+
               <View style={styles.quickGrid}>
                 {options.map((opt) => (
                   <Pressable
@@ -133,10 +155,23 @@ export function FaqBot({
                       pressed && { opacity: 0.9 },
                     ]}
                   >
-                    <Text style={styles.quickText}>{opt.title}</Text>
+                    <Text style={styles.quickText}>{nodeTitle(opt.id)}</Text>
                   </Pressable>
                 ))}
               </View>
+
+              <View style={{ height: 8 }} />
+              <Pressable
+                onPress={() => setOpen(false)}
+                style={({ pressed }) => [
+                  styles.closeRowBtn,
+                  pressed && { opacity: 0.9 },
+                ]}
+              >
+                <Text style={styles.closeRowText}>
+                  {t("faq.close", { defaultValue: "Close" })}
+                </Text>
+              </Pressable>
             </View>
           </View>
         </View>
@@ -157,6 +192,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     elevation: 6,
+    zIndex: 9999,
   },
 
   overlay: {
@@ -195,10 +231,7 @@ const styles = StyleSheet.create({
   },
 
   messages: { flexGrow: 0 },
-  messagesContent: {
-    padding: 14,
-    gap: 10,
-  },
+  messagesContent: { padding: 14, gap: 10 },
   bubble: {
     maxWidth: "88%",
     paddingVertical: 10,
@@ -211,13 +244,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E5E7EB",
   },
-  userBubble: {
-    alignSelf: "flex-end",
-    backgroundColor: "#0B5E93",
-  },
-  bubbleText: {
-    color: "#111827",
-  },
+  userBubble: { alignSelf: "flex-end", backgroundColor: "#0B5E93" },
+  bubbleText: { color: "#111827" },
+  userBubbleText: { color: "#FFFFFF", fontWeight: "600" },
 
   quickWrap: {
     padding: 14,
@@ -233,11 +262,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     letterSpacing: 1.1,
   },
-  quickGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-  },
+  quickGrid: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
   quickBtn: {
     paddingVertical: 10,
     paddingHorizontal: 12,
@@ -246,8 +271,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(11,94,147,0.18)",
   },
-  quickText: {
-    color: "#0B5E93",
-    fontWeight: "700",
+  quickText: { color: "#0B5E93", fontWeight: "700" },
+
+  closeRowBtn: {
+    alignSelf: "flex-end",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    backgroundColor: "rgba(0,0,0,0.06)",
   },
+  closeRowText: { fontWeight: "700", color: "#111827" },
 });

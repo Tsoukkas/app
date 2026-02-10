@@ -23,6 +23,8 @@ import {
 
 import { IconSymbol } from "@/components/ui/icon-symbol";
 
+import { FaqBot } from "@/components/FaqBot";
+
 type RowItem = {
   id: string;
   title: string;
@@ -518,6 +520,7 @@ function ProfileScreen() {
 
         <View style={{ height: 20 }} />
       </ScrollView>
+      <FaqBot />
     </SafeAreaView>
   );
 }

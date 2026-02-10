@@ -10,6 +10,8 @@ import {
   View,
 } from "react-native";
 
+import { FaqBot } from "@/components/FaqBot";
+
 function chunk<T>(arr: T[], size: number) {
   const out: T[][] = [];
   for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
@@ -78,19 +80,22 @@ export default function KnowledgeHub() {
   const resources = KNOWLEDGE_ITEMS.filter((x) => x.type === "resource");
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <SectionGrid
-        heading={t("knowledge.modules")}
-        items={modules}
-        onPressItem={(item) => router.push(`/(knowledge)/${item.id}`)}
-      />
+    <View style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <SectionGrid
+          heading={t("knowledge.modules")}
+          items={modules}
+          onPressItem={(item) => router.push(`/(knowledge)/${item.id}`)}
+        />
 
-      <SectionGrid
-        heading={t("knowledge.resources")}
-        items={resources}
-        onPressItem={(item) => router.push(`/(knowledge)/${item.id}`)}
-      />
-    </ScrollView>
+        <SectionGrid
+          heading={t("knowledge.resources")}
+          items={resources}
+          onPressItem={(item) => router.push(`/(knowledge)/${item.id}`)}
+        />
+      </ScrollView>
+      <FaqBot />
+    </View>
   );
 }
 

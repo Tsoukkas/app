@@ -1,3 +1,4 @@
+import { FaqBot } from "@/components/FaqBot";
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -43,38 +44,45 @@ export default function HomeScreen() {
   );
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {/* Logo */}
-      <Image
-        source={require("@/assets/images/Football4aChance_logo.png")}
-        style={styles.logoImage}
-      />
+    <View style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* Logo */}
+        <Image
+          source={require("@/assets/images/Football4aChance_logo.png")}
+          style={styles.logoImage}
+        />
 
-      <Text style={styles.h2}>
-        {t("explore.title", { defaultValue: "Videos / Impact Stories" })}
-      </Text>
+        <Text style={styles.h2}>
+          {t("explore.title", { defaultValue: "Videos / Impact Stories" })}
+        </Text>
 
-      {/* Videos */}
-      {videos.map((video, index) => (
-        <View key={video.id} style={styles.card}>
-          <Text style={styles.title}>
-            {t("explore.impactStory", {
-              num: index + 1,
-              defaultValue: `Impact Story #${index + 1}`,
-            })}
-          </Text>
+        {/* Videos */}
+        {videos.map((video, index) => (
+          <View key={video.id} style={styles.card}>
+            <Text style={styles.title}>
+              {t("explore.impactStory", {
+                num: index + 1,
+                defaultValue: `Impact Story #${index + 1}`,
+              })}
+            </Text>
 
-          <View style={styles.videoWrapper}>
-            <WebView
-              source={{ uri: video.embedUrl }}
-              javaScriptEnabled
-              domStorageEnabled
-              allowsFullscreenVideo
-            />
+            <View style={styles.videoWrapper}>
+              <WebView
+                source={{ uri: video.embedUrl }}
+                javaScriptEnabled
+                domStorageEnabled
+                allowsFullscreenVideo
+                // Προαιρετικά: βοηθά να μην “κολλάει” το scroll σε Android
+                nestedScrollEnabled
+              />
+            </View>
           </View>
-        </View>
-      ))}
-    </ScrollView>
+        ))}
+      </ScrollView>
+
+      {/* Floating FAQ bot */}
+      <FaqBot />
+    </View>
   );
 }
 
@@ -83,6 +91,7 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 16,
     paddingTop: 60,
+    paddingBottom: 90, // για να μην “πέφτει” content κάτω από το bot
   },
   logoImage: {
     width: width * 0.6,

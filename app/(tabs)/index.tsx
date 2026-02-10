@@ -10,6 +10,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  View,
 } from "react-native";
 
 import { AppMap } from "@/components/AppMap";
@@ -17,6 +18,8 @@ import type { Place } from "@/components/map-types";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+
+import { FaqBot } from "@/components/FaqBot";
 
 const { width } = Dimensions.get("window");
 
@@ -82,24 +85,27 @@ export default function HomeScreen() {
   );
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Image
-        source={require("@/assets/images/Football4aChance_logo.png")}
-        style={styles.logoImage}
-      />
+    <View style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <Image
+          source={require("@/assets/images/Football4aChance_logo.png")}
+          style={styles.logoImage}
+        />
 
-      <Text style={styles.h2}>
-        {t("map.title", { defaultValue: "Map Integration" })}
-      </Text>
-      <Text style={styles.h3}>
-        {t("map.subtitle", {
-          defaultValue: "Sports Facilities, Courts & Resources",
-        })}
-      </Text>
+        <Text style={styles.h2}>
+          {t("map.title", { defaultValue: "Map Integration" })}
+        </Text>
+        <Text style={styles.h3}>
+          {t("map.subtitle", {
+            defaultValue: "Sports Facilities, Courts & Resources",
+          })}
+        </Text>
 
-      {/* ✅ Map */}
-      <AppMap places={places} />
-    </ScrollView>
+        {/* ✅ Map */}
+        <AppMap places={places} />
+      </ScrollView>
+      <FaqBot />
+    </View>
   );
 }
 
