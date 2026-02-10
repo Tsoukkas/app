@@ -29,7 +29,8 @@ function Card({ item, onPress }: { item: KnowledgeItem; onPress: () => void }) {
 
   return (
     <Pressable style={styles.card} onPress={onPress}>
-      <Image source={item.image} style={styles.image} />
+      <Image source={item.image} style={styles.image} resizeMode="cover" />
+
       <Text style={styles.title}>{title}</Text>
 
       <Text style={styles.categories}>
@@ -93,43 +94,59 @@ export default function KnowledgeHub() {
   );
 }
 
+const clamp = (n: number, min: number, max: number) =>
+  Math.max(min, Math.min(max, n));
+
 const styles = StyleSheet.create({
   container: {
     padding: 16,
     gap: 20,
+    flexGrow: 1,
   },
   section: {
     gap: 12,
+    width: "100%",
+    maxWidth: 700,
+    alignSelf: "center",
   },
   sectionTitle: {
-    fontSize: 22,
+    fontSize: clamp(22, 18, 26),
     fontWeight: "800",
     textAlign: "center",
+    flexWrap: "wrap",
   },
   row: {
     flexDirection: "row",
+    flexWrap: "wrap",
     gap: 12,
   },
   card: {
-    flex: 1,
+    flexGrow: 1,
+    flexBasis: "48%",
+    minWidth: 160,
     backgroundColor: "white",
     borderRadius: 16,
     padding: 10,
     gap: 6,
+    overflow: "hidden", // για να μην “ξεφεύγει” κάτι οπτικά
   },
   cardSpacer: {
-    flex: 1,
+    flexGrow: 1,
+    flexBasis: "48%",
+    minWidth: 160,
   },
   image: {
     width: "100%",
-    height: 100,
+    height: 110, // FIXED height για "σταθερή" εικόνα μέσα στο card
     borderRadius: 12,
   },
   title: {
     fontWeight: "700",
+    flexWrap: "wrap",
   },
   categories: {
-    fontSize: 12,
+    fontSize: clamp(12, 11, 13),
     color: "#6B7280",
+    flexWrap: "wrap",
   },
 });

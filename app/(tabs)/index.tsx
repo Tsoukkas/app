@@ -66,6 +66,16 @@ export default function HomeScreen() {
         longitude: 33.3768,
         image: require("@/assets/images/football.jpg"),
       },
+      {
+        id: "4",
+        title: t("map.places.1.title", { defaultValue: "Court" }),
+        description: t("map.places.1.description", {
+          defaultValue: "Open daily 08:00–22:00",
+        }),
+        latitude: 33.1856,
+        longitude: 32.3823,
+        image: require("@/assets/images/football.jpg"),
+      },
     ],
     // ⚠️ βάζουμε language dependency για να αλλάζει live όταν αλλάζει γλώσσα
     [i18n.language, t],

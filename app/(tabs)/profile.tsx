@@ -9,7 +9,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Switch,
@@ -17,6 +16,10 @@ import {
   TextInput,
   View,
 } from "react-native";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 import { IconSymbol } from "@/components/ui/icon-symbol";
 
@@ -27,11 +30,12 @@ type RowItem = {
   onPress: () => void;
 };
 
+const clamp = (n: number, min: number, max: number) =>
+  Math.max(min, Math.min(max, n));
+
 export default function ProfileTab() {
   const { isLoaded, isSignedIn } = useUser();
-
   if (!isLoaded) return null;
-
   return isSignedIn ? <ProfileScreen /> : <AuthGate />;
 }
 
@@ -85,7 +89,7 @@ function LoginScreen({ onGoRegister }: { onGoRegister: () => void }) {
   };
 
   return (
-    <SafeAreaView style={authStyles.safe}>
+    <SafeAreaView style={authStyles.safe} edges={["top"]}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -214,7 +218,7 @@ function RegisterScreen({ onGoLogin }: { onGoLogin: () => void }) {
   };
 
   return (
-    <SafeAreaView style={authStyles.safe}>
+    <SafeAreaView style={authStyles.safe} edges={["top"]}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -356,119 +360,6 @@ function InputPill({
   );
 }
 
-const authStyles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#FFFFFF" },
-  container: {
-    paddingHorizontal: 18,
-    paddingTop: 14,
-    paddingBottom: 20,
-  },
-  logo: {
-    width: "100%",
-    height: 120,
-    marginTop: 8,
-  },
-  titleCard: {
-    marginTop: 10,
-    backgroundColor: "#B7C334",
-    borderRadius: 26,
-    paddingVertical: 14,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "800",
-    color: "#000",
-    marginBottom: 8,
-  },
-  subtitlePill: {
-    backgroundColor: "#0B5E93",
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    borderRadius: 999,
-  },
-  subtitleText: { color: "#FFFFFF", fontSize: 13, fontWeight: "600" },
-
-  inputPill: {
-    marginTop: 14,
-    backgroundColor: "#0B5E93",
-    borderRadius: 999,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  input: {
-    flex: 1,
-    color: "#FFFFFF",
-    fontSize: 14,
-    padding: 0,
-  },
-
-  rememberRow: {
-    marginTop: 14,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 6,
-  },
-  rememberText: { color: "#111827", fontSize: 14 },
-
-  primaryBtn: {
-    marginTop: 12,
-    backgroundColor: "#0B5E93",
-    borderRadius: 14,
-    paddingVertical: 14,
-    alignItems: "center",
-  },
-  primaryBtnText: { color: "#FFFFFF", fontSize: 16, fontWeight: "700" },
-
-  bottomRow: {
-    marginTop: 12,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 4,
-  },
-  bottomText: { color: "#111827", fontSize: 14 },
-  bottomLink: { color: "#111827", fontSize: 14, fontWeight: "800" },
-
-  registerHintRow: {
-    marginTop: 10,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  hereLink: {
-    color: "#0B5E93",
-    fontSize: 14,
-    fontWeight: "800",
-    textDecorationLine: "underline",
-  },
-
-  fieldLabel: {
-    marginTop: 12,
-    marginBottom: -6,
-    fontSize: 12,
-    letterSpacing: 1.4,
-    color: "#111827",
-    opacity: 0.8,
-  },
-
-  twoCols: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-  },
-
-  errorText: {
-    marginTop: 10,
-    color: "#B91C1C",
-    fontWeight: "600",
-  },
-});
-
 /* ------------------------------------------
    SIGNED IN: Profile page
 ------------------------------------------ */
@@ -478,6 +369,8 @@ function ProfileScreen() {
   const { t } = useTranslation();
   const { signOut } = useAuth();
   const { user, isLoaded } = useUser();
+
+  const insets = useSafeAreaInsets(); // ✅ αυτό δίνει top inset (notch)
 
   const fullName = isLoaded
     ? user?.fullName ||
@@ -493,7 +386,7 @@ function ProfileScreen() {
         id: "interests",
         title: t("profile.interests"),
         icon: "favorite-border",
-        onPress: () => Alert.alert("Coming soon"),
+        onPress: () => router.push("/interests"),
       },
       {
         id: "change-password",
@@ -501,7 +394,6 @@ function ProfileScreen() {
         icon: "vpn-key",
         onPress: () => router.push("/change-password"),
       },
-
       {
         id: "language",
         title: t("profile.language"),
@@ -561,21 +453,20 @@ function ProfileScreen() {
   );
 
   return (
-    <SafeAreaView style={profileStyles.safe}>
+    <SafeAreaView style={profileStyles.safe} edges={["top"]}>
       <View style={profileStyles.header}>
         <Pressable
-          onPress={() => {
-            try {
-              router.back();
-            } catch {}
-          }}
+          onPress={() => router.back()}
           style={profileStyles.headerBack}
           hitSlop={10}
         >
           <MaterialIcons name="arrow-back-ios" size={20} color="#FFFFFF" />
         </Pressable>
 
-        <Text style={profileStyles.headerTitle}>{t("profile.title")}</Text>
+        <Text style={profileStyles.headerTitle} numberOfLines={1}>
+          {t("profile.title")}
+        </Text>
+
         <View style={profileStyles.headerRightSpacer} />
       </View>
 
@@ -589,6 +480,7 @@ function ProfileScreen() {
                   : require("@/assets/images/Football4aChance_logo.png")
               }
               style={profileStyles.avatar}
+              resizeMode="cover"
             />
 
             <Pressable
@@ -640,7 +532,9 @@ function Section({
   return (
     <View style={profileStyles.section}>
       <View style={profileStyles.sectionHeader}>
-        <Text style={profileStyles.sectionHeaderText}>{title}</Text>
+        <Text style={profileStyles.sectionHeaderText} numberOfLines={1}>
+          {title}
+        </Text>
       </View>
       <View style={profileStyles.sectionBody}>{children}</View>
     </View>
@@ -654,17 +548,165 @@ function Row({ item }: { item: RowItem }) {
         <MaterialIcons name={item.icon} size={22} color="#111827" />
       </View>
 
-      <Text style={profileStyles.rowTitle}>{item.title}</Text>
+      <Text style={profileStyles.rowTitle} numberOfLines={1}>
+        {item.title}
+      </Text>
 
       <IconSymbol size={22} name="chevron.right" color="#9CA3AF" />
     </Pressable>
   );
 }
 
+/* ------------------------------------------
+   STYLES
+------------------------------------------ */
+
+const authStyles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: "#FFFFFF" },
+  container: {
+    paddingHorizontal: 18,
+    paddingTop: 14,
+    paddingBottom: 20,
+    flexGrow: 1,
+    width: "100%",
+    maxWidth: 520,
+    alignSelf: "center",
+  },
+  logo: {
+    width: "100%",
+    maxWidth: 520,
+    aspectRatio: 3 / 1,
+    height: undefined,
+    alignSelf: "center",
+    marginTop: 8,
+  },
+  titleCard: {
+    marginTop: 10,
+    backgroundColor: "#B7C334",
+    borderRadius: 26,
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: "800",
+    color: "#000",
+    marginBottom: 8,
+    textAlign: "center",
+    flexWrap: "wrap",
+  },
+  subtitlePill: {
+    backgroundColor: "#0B5E93",
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderRadius: 999,
+    maxWidth: "100%",
+  },
+  subtitleText: {
+    color: "#FFFFFF",
+    fontSize: 13,
+    fontWeight: "600",
+    textAlign: "center",
+    flexWrap: "wrap",
+  },
+
+  inputPill: {
+    marginTop: 14,
+    backgroundColor: "#0B5E93",
+    borderRadius: 999,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    width: "100%",
+  },
+  input: {
+    flex: 1,
+    color: "#FFFFFF",
+    fontSize: 14,
+    padding: 0,
+    minWidth: 0,
+  },
+
+  rememberRow: {
+    marginTop: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 6,
+    width: "100%",
+  },
+  rememberText: { color: "#111827", fontSize: 14, flexWrap: "wrap" },
+
+  primaryBtn: {
+    marginTop: 12,
+    backgroundColor: "#0B5E93",
+    borderRadius: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    alignItems: "center",
+    width: "100%",
+  },
+  primaryBtnText: { color: "#FFFFFF", fontSize: 16, fontWeight: "700" },
+
+  bottomRow: {
+    marginTop: 12,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 4,
+    flexWrap: "wrap",
+    width: "100%",
+  },
+  bottomText: { color: "#111827", fontSize: 14, flexWrap: "wrap" },
+  bottomLink: { color: "#111827", fontSize: 14, fontWeight: "800" },
+
+  registerHintRow: {
+    marginTop: 10,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    flexWrap: "wrap",
+    width: "100%",
+  },
+  hereLink: {
+    color: "#0B5E93",
+    fontSize: 14,
+    fontWeight: "800",
+    textDecorationLine: "underline",
+  },
+
+  fieldLabel: {
+    marginTop: 12,
+    marginBottom: -6,
+    fontSize: 12,
+    letterSpacing: 1.4,
+    color: "#111827",
+    opacity: 0.8,
+    flexWrap: "wrap",
+  },
+
+  twoCols: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    width: "100%",
+  },
+
+  errorText: {
+    marginTop: 10,
+    color: "#B91C1C",
+    fontWeight: "600",
+    flexWrap: "wrap",
+  },
+});
+
 const profileStyles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: "#F3F4F6" },
+
   header: {
-    height: 56,
     backgroundColor: "#B7C334",
     alignItems: "center",
     justifyContent: "space-between",
@@ -677,15 +719,27 @@ const profileStyles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  headerTitle: { color: "#FFFFFF", fontSize: 18, fontWeight: "600" },
+  headerTitle: {
+    flex: 1,
+    color: "#FFFFFF",
+    fontSize: clamp(18, 14, 20),
+    fontWeight: "700",
+    textAlign: "center",
+  },
   headerRightSpacer: { width: 40, height: 40 },
 
-  container: { paddingBottom: 20 },
+  container: {
+    paddingBottom: 20,
+    flexGrow: 1,
+    width: "100%",
+  },
+
   profileCard: {
     backgroundColor: "#FFFFFF",
     alignItems: "center",
     paddingTop: 18,
     paddingBottom: 16,
+    paddingHorizontal: 16,
   },
   avatarWrap: {
     width: 92,
@@ -714,8 +768,20 @@ const profileStyles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#FFFFFF",
   },
-  nameText: { fontSize: 18, fontWeight: "700", color: "#111827" },
-  emailText: { marginTop: 2, fontSize: 14, color: "#6B7280" },
+  nameText: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#111827",
+    textAlign: "center",
+    flexWrap: "wrap",
+  },
+  emailText: {
+    marginTop: 2,
+    fontSize: 14,
+    color: "#6B7280",
+    textAlign: "center",
+    flexWrap: "wrap",
+  },
 
   section: { marginTop: 12 },
   sectionHeader: {
@@ -723,18 +789,24 @@ const profileStyles = StyleSheet.create({
     paddingVertical: 10,
     backgroundColor: "#E5E7EB",
   },
-  sectionHeaderText: { fontSize: 13, color: "#6B7280" },
+  sectionHeaderText: { fontSize: 13, color: "#6B7280", flexWrap: "wrap" },
   sectionBody: { backgroundColor: "#FFFFFF" },
 
   row: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
-    height: 56,
+    minHeight: 56,
+    paddingVertical: 12,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: "#E5E7EB",
     gap: 12,
   },
   rowLeft: { width: 28, alignItems: "center" },
-  rowTitle: { flex: 1, fontSize: 16, color: "#111827" },
+  rowTitle: {
+    flex: 1,
+    fontSize: 16,
+    color: "#111827",
+    flexWrap: "wrap",
+  },
 });

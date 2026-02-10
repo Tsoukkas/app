@@ -1,111 +1,10 @@
-/*
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { useRouter } from "expo-router";
-import React from "react";
-import {
-    Pressable,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
-} from "react-native";
-
-export default function GdprScreen() {
-  const router = useRouter();
-
-  return (
-    <SafeAreaView style={styles.safe}>
-      {/* Header */ /*}
-      <View style={styles.header}>
-        <Pressable
-          onPress={() => router.back()}
-          style={styles.headerBack}
-          hitSlop={10}
-        >
-          <MaterialIcons name="arrow-back-ios" size={20} color="#FFFFFF" />
-        </Pressable>
-
-        <Text style={styles.headerTitle}>GDPR</Text>
-        <View style={styles.headerRightSpacer} />
-      </View>
-
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.card}>
-          {/* Εδώ βάλε ό,τι κείμενο θες */ /*}
-          <Text style={styles.title}>GDPR Policy</Text>
-
-          <Text style={styles.paragraph}>
-            Γράψε εδώ το κείμενο που θέλεις για το GDPR. Μπορείς να βάλεις
-            τίτλους, παραγράφους, bullets κτλ.
-          </Text>
-
-          <Text style={styles.subtitle}>1. What data we collect</Text>
-          <Text style={styles.paragraph}>(Γράψε εδώ…)</Text>
-
-          <Text style={styles.subtitle}>2. How we use your data</Text>
-          <Text style={styles.paragraph}>(Γράψε εδώ…)</Text>
-
-          <Text style={styles.subtitle}>3. Your rights</Text>
-          <Text style={styles.paragraph}>(Γράψε εδώ…)</Text>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#F3F4F6" },
-  header: {
-    height: 56,
-    backgroundColor: "#B7C334",
-    alignItems: "center",
-    justifyContent: "space-between",
-    flexDirection: "row",
-    paddingHorizontal: 12,
-  },
-  headerBack: {
-    width: 40,
-    height: 40,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  headerTitle: { color: "#FFFFFF", fontSize: 18, fontWeight: "600" },
-  headerRightSpacer: { width: 40, height: 40 },
-
-  content: { padding: 16, paddingBottom: 24 },
-  card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 14,
-    padding: 16,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "800",
-    color: "#111827",
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: "#111827",
-    marginTop: 12,
-    marginBottom: 6,
-  },
-  paragraph: { fontSize: 14, lineHeight: 20, color: "#374151" },
-}); */
+import { FaqBot } from "@/components/FaqBot";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function GdprScreen() {
   const router = useRouter();
@@ -118,7 +17,7 @@ export default function GdprScreen() {
   }, [t]);
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={["top"]}>
       <View style={styles.header}>
         <Pressable
           onPress={() => router.back()}
@@ -128,7 +27,9 @@ export default function GdprScreen() {
           <MaterialIcons name="arrow-back-ios" size={20} color="#FFFFFF" />
         </Pressable>
 
-        <Text style={styles.headerTitle}>{title}</Text>
+        <Text style={styles.headerTitle} numberOfLines={1}>
+          {title}
+        </Text>
         <View style={styles.headerRightSpacer} />
       </View>
 
@@ -143,12 +44,17 @@ export default function GdprScreen() {
           ))}
         </View>
       </ScrollView>
+      <FaqBot />
     </SafeAreaView>
   );
 }
 
+const clamp = (n: number, min: number, max: number) =>
+  Math.max(min, Math.min(max, n));
+
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: "#F3F4F6" },
+
   header: {
     height: 56,
     backgroundColor: "#B7C334",
@@ -163,20 +69,41 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  headerTitle: { color: "#FFFFFF", fontSize: 18, fontWeight: "600" },
+  headerTitle: {
+    flex: 1,
+    color: "#FFFFFF",
+    fontSize: clamp(18, 14, 20),
+    fontWeight: "700",
+    textAlign: "center",
+  },
   headerRightSpacer: { width: 40, height: 40 },
 
-  content: { padding: 16, paddingBottom: 24 },
-  card: { backgroundColor: "#FFFFFF", borderRadius: 14, padding: 16 },
+  content: {
+    padding: 16,
+    paddingBottom: 24,
+    flexGrow: 1,
+    width: "100%",
+    maxWidth: 720,
+    alignSelf: "center",
+  },
+
+  card: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 14,
+    padding: 16,
+    width: "100%",
+  },
+
   title: {
-    fontSize: 18,
+    fontSize: clamp(18, 16, 22),
     fontWeight: "800",
     color: "#111827",
     marginBottom: 10,
   },
+
   paragraph: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: clamp(14, 13, 16),
+    lineHeight: clamp(20, 18, 24),
     color: "#374151",
     marginBottom: 10,
   },
