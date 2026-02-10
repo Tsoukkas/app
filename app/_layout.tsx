@@ -88,6 +88,7 @@ function AppStack() {
   return (
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="interests" options={{ headerShown: false }} />
       <Stack.Screen name="(home)" options={{ headerShown: false }} />
       <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       <Stack.Screen name="(knowledge)" options={{ headerShown: false }} />

@@ -148,6 +148,21 @@
     "greek": "Greek",
     "saved": "Language updated"
   },
+  "interests": {
+    "title": "Interests",
+    "hint": "Choose categories you are interested in.",
+    "save": "Save",
+    "saved": "Interests saved",
+    "saveError": "Failed to save",
+    "loading": "Loading...",
+    "categories": {
+      "football": "Football",
+      "basketball": "Basketball",
+      "tennis": "Tennis",
+      "coaching": "Coaching",
+      "volunteering": "Volunteering"
+    }
+  },
   "faq": {
     "title": "Help Bot",
     "options": "Options",

@@ -1,13 +1,17 @@
+import { CATEGORIES, STORAGE_KEY } from "@/app/interests";
 import { KNOWLEDGE_ITEMS, KnowledgeItem } from "@/data/knowledge";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
+import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Image,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    Image,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 
 import { FaqBot } from "@/components/FaqBot";
@@ -25,9 +29,15 @@ function Card({ item, onPress }: { item: KnowledgeItem; onPress: () => void }) {
     defaultValue: item.title,
   });
 
-  const categoryLabels = item.categories.map((c) =>
-    t(`knowledge.category.${c}`, { defaultValue: String(c) }),
-  );
+  // Map numeric category ids to interest/category labels defined in CATEGORIES.
+  const categoryLabels = item.categories
+    .map((catId) => {
+      const found = CATEGORIES.find((c) => c.catIds.includes(catId));
+      if (found) return t(found.key, { defaultValue: found.id });
+      // fall back to legacy knowledge.category translations
+      return t(`knowledge.category.${catId}`, { defaultValue: String(catId) });
+    })
+    .filter(Boolean);
 
   return (
     <Pressable style={styles.card} onPress={onPress}>
@@ -76,12 +86,91 @@ export default function KnowledgeHub() {
   const router = useRouter();
   const { t } = useTranslation();
 
-  const modules = KNOWLEDGE_ITEMS.filter((x) => x.type === "module");
-  const resources = KNOWLEDGE_ITEMS.filter((x) => x.type === "resource");
+  const [selectedInterests, setSelectedInterests] = useState<
+    Record<string, boolean>
+  >({});
+
+  // Load interests on mount and every time the screen is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      let active = true;
+      (async () => {
+        try {
+          const raw = await AsyncStorage.getItem(STORAGE_KEY);
+          if (!active) return;
+          if (raw) setSelectedInterests(JSON.parse(raw));
+          else setSelectedInterests({});
+        } catch (e) {
+          console.log("Failed to load interests in KnowledgeHub:", e);
+        }
+      })();
+
+      return () => {
+        active = false;
+      };
+    }, []),
+  );
+
+  const selectedCategories = useMemo(() => {
+    return CATEGORIES.filter((c) => selectedInterests[c.id]);
+  }, [selectedInterests]);
+
+  const clearFilters = async () => {
+    try {
+      await AsyncStorage.removeItem(STORAGE_KEY);
+      setSelectedInterests({});
+    } catch (e) {
+      console.log("Failed to clear interests:", e);
+    }
+  };
+
+  // Expand selected interest ids to knowledge category ids set
+  const selectedCatIds = useMemo(() => {
+    const set = new Set<number>();
+    for (const c of CATEGORIES) {
+      if (selectedInterests[c.id]) {
+        for (const k of c.catIds) set.add(k);
+      }
+    }
+    return set;
+  }, [selectedInterests]);
+
+  const modules = useMemo(() => {
+    const items = KNOWLEDGE_ITEMS.filter((x) => x.type === "module");
+    if (selectedCatIds.size === 0) return items;
+    return items.filter((it) =>
+      it.categories.some((c) => selectedCatIds.has(c)),
+    );
+  }, [selectedCatIds]);
+
+  const resources = useMemo(() => {
+    const items = KNOWLEDGE_ITEMS.filter((x) => x.type === "resource");
+    if (selectedCatIds.size === 0) return items;
+    return items.filter((it) =>
+      it.categories.some((c) => selectedCatIds.has(c)),
+    );
+  }, [selectedCatIds]);
 
   return (
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.container}>
+        {selectedCategories.length > 0 ? (
+          <View style={styles.filterBar}>
+            <View style={styles.filterBadges}>
+              {selectedCategories.map((c) => (
+                <View key={c.id} style={styles.badge}>
+                  <Text style={styles.badgeText}>{t(c.key)}</Text>
+                </View>
+              ))}
+            </View>
+
+            <Pressable onPress={clearFilters} style={styles.clearBtn}>
+              <Text style={styles.clearText}>
+                {t("interests.clear", { defaultValue: "Clear filters" })}
+              </Text>
+            </Pressable>
+          </View>
+        ) : null}
         <SectionGrid
           heading={t("knowledge.modules")}
           items={modules}
@@ -114,6 +203,31 @@ const styles = StyleSheet.create({
     maxWidth: 700,
     alignSelf: "center",
   },
+  filterBar: {
+    width: "100%",
+    maxWidth: 700,
+    alignSelf: "center",
+    backgroundColor: "#FFFFFF",
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "#E5E7EB",
+  },
+  filterBadges: { flexDirection: "row", flexWrap: "wrap", gap: 8, flex: 1 },
+  badge: {
+    backgroundColor: "#EFF6FF",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    marginRight: 8,
+  },
+  badgeText: { color: "#2563EB", fontWeight: "700" },
+  clearBtn: { marginLeft: 8 },
+  clearText: { color: "#6B7280", fontWeight: "600" },
   sectionTitle: {
     fontSize: clamp(22, 18, 26),
     fontWeight: "800",
