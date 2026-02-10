@@ -173,6 +173,7 @@ function LoginScreen({ onGoRegister }: { onGoRegister: () => void }) {
           <View style={{ height: 16 }} />
         </ScrollView>
       </KeyboardAvoidingView>
+      <FaqBot />
     </SafeAreaView>
   );
 }
@@ -331,6 +332,7 @@ function RegisterScreen({ onGoLogin }: { onGoLogin: () => void }) {
           <View style={{ height: 16 }} />
         </ScrollView>
       </KeyboardAvoidingView>
+      <FaqBot />
     </SafeAreaView>
   );
 }

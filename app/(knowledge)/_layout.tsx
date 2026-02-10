@@ -7,9 +7,6 @@ export default function KnowledgeLayout() {
         headerTitle: "Learning",
         headerStyle: { backgroundColor: "#F3F4F6" },
         contentStyle: { backgroundColor: "#F9FAFB" },
-
-        // ❌ ΜΗΝ το βάζεις στο Android
-        // headerBackTitleVisible: false,
       }}
     />
   );
