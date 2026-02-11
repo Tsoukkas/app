@@ -2,7 +2,7 @@ import type { Place } from "@/components/map-types";
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import MapView, { Marker, Region } from "react-native-maps";
+import MapView, { Marker, Region, PROVIDER_GOOGLE } from "react-native-maps";
 
 export function AppMap({ places }: { places: Place[] }) {
   const { t } = useTranslation();
@@ -20,7 +20,7 @@ export function AppMap({ places }: { places: Place[] }) {
 
   return (
     <View style={styles.mapWrapper}>
-      <MapView style={styles.map} initialRegion={initialRegion}>
+      <MapView provider={PROVIDER_GOOGLE} style={styles.map} initialRegion={initialRegion}>
         {places.map((p) => (
           <Marker
             key={p.id}
