@@ -4,13 +4,13 @@ import { useRouter } from "expo-router";
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Dimensions,
-  Image,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    Dimensions,
+    Image,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 
 import { AppMap } from "@/components/AppMap";
@@ -137,6 +137,7 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 16,
     paddingTop: 60,
+    flexGrow: 1,
   },
   header: {
     padding: 16,

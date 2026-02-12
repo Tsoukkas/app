@@ -1,9 +1,11 @@
 import { useAuth, useSignIn, useSignUp, useUser } from "@clerk/clerk-expo";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  ActivityIndicator,
   Alert,
   Image,
   KeyboardAvoidingView,
@@ -373,6 +375,8 @@ function ProfileScreen() {
   const { t } = useTranslation();
   const { signOut } = useAuth();
   const { user, isLoaded } = useUser();
+  const [uploading, setUploading] = useState(false);
+  const [forceRefresh, setForceRefresh] = useState(0);
 
   const insets = useSafeAreaInsets(); // ✅ αυτό δίνει top inset (notch)
 
@@ -382,7 +386,94 @@ function ProfileScreen() {
       ""
     : "";
   const email = isLoaded ? user?.primaryEmailAddress?.emailAddress || "" : "";
-  const avatarUrl = isLoaded ? user?.imageUrl : null;
+  // Force refresh by using forceRefresh state to ensure we get latest from Clerk
+  const avatarUrl = isLoaded && forceRefresh >= 0 ? user?.imageUrl : null;
+
+  const handleChangeProfilePicture = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        setUploading(true);
+        try {
+          const asset = result.assets[0];
+          
+          console.log("Selected asset:", {
+            uri: asset.uri,
+            type: asset.type,
+            width: asset.width,
+            height: asset.height,
+            fileName: asset.fileName,
+          });
+
+          // Convert to FormData which Clerk expects
+          const formData = new FormData();
+          
+          // Fetch the blob
+          const response = await fetch(asset.uri);
+          const blob = await response.blob();
+
+          console.log("Blob created:", { size: blob.size, type: blob.type });
+
+          // Append blob to FormData
+          const fileName = asset.fileName || `profile-${Date.now()}.jpg`;
+          formData.append("file", blob, fileName);
+
+          console.log("Uploading with FormData...");
+          
+          // Call setProfileImage with FormData
+          await user?.setProfileImage({ file: formData as any });
+          
+          console.log("setProfileImage call completed");
+
+          // Wait for Clerk to process
+          console.log("Waiting 2 seconds for Clerk to process...");
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+
+          // Reload user - this should fetch fresh data from Clerk
+          console.log("Reloading user from Clerk...");
+          const reloadResponse = await user?.reload();
+          console.log("Reload response:", reloadResponse);
+          
+          console.log("User reloaded. New imageUrl:", user?.imageUrl);
+          
+          // Trigger component re-render to display new image
+          setForceRefresh((prev) => prev + 1);
+
+          Alert.alert(
+            t("profile.success"),
+            t("profile.pictureUpdated", {
+              defaultValue: "Profile picture updated successfully!",
+            }),
+          );
+        } catch (error) {
+          console.error("Error uploading profile picture:", error);
+          console.error("Error details:", JSON.stringify(error, null, 2));
+          Alert.alert(
+            t("profile.error"),
+            t("profile.pictureUploadFailed", {
+              defaultValue: "Failed to upload profile picture",
+            }),
+          );
+        } finally {
+          setUploading(false);
+        }
+      }
+    } catch (error) {
+      console.error("Error picking image:", error);
+      Alert.alert(
+        t("profile.error"),
+        t("profile.imagePicker", {
+          defaultValue: "Failed to open image picker",
+        }),
+      );
+    }
+  };
 
   const generalSettings: RowItem[] = useMemo(
     () => [
@@ -478,23 +569,32 @@ function ProfileScreen() {
         <View style={profileStyles.profileCard}>
           <View style={profileStyles.avatarWrap}>
             <Image
+              key={forceRefresh}
               source={
                 avatarUrl
-                  ? { uri: avatarUrl }
+                  ? { uri: `${avatarUrl}?t=${forceRefresh}` }
                   : require("@/assets/images/Football4aChance_logo.png")
               }
               style={profileStyles.avatar}
               resizeMode="cover"
             />
+            {uploading && (
+              <View style={profileStyles.uploadingOverlay}>
+                <ActivityIndicator size="large" color="#FFFFFF" />
+              </View>
+            )}
 
             <Pressable
-              onPress={() =>
-                Alert.alert("Coming soon", "Edit avatar / profile details")
-              }
+              onPress={handleChangeProfilePicture}
               style={profileStyles.avatarEdit}
               hitSlop={10}
+              disabled={uploading}
             >
-              <MaterialIcons name="edit" size={16} color="#FFFFFF" />
+              {uploading ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <MaterialIcons name="edit" size={16} color="#FFFFFF" />
+              )}
             </Pressable>
           </View>
 
@@ -759,6 +859,15 @@ const profileStyles = StyleSheet.create({
     height: 92,
     borderRadius: 46,
     backgroundColor: "#E5E7EB",
+  },
+  uploadingOverlay: {
+    position: "absolute",
+    width: 92,
+    height: 92,
+    borderRadius: 46,
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    alignItems: "center",
+    justifyContent: "center",
   },
   avatarEdit: {
     position: "absolute",

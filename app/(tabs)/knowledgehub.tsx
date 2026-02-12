@@ -13,6 +13,7 @@ import {
     Text,
     View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { FaqBot } from "@/components/FaqBot";
 
@@ -152,7 +153,7 @@ export default function KnowledgeHub() {
   }, [selectedCatIds]);
 
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
       <ScrollView contentContainerStyle={styles.container}>
         {selectedCategories.length > 0 ? (
           <View style={styles.filterBar}>
@@ -184,7 +185,7 @@ export default function KnowledgeHub() {
         />
       </ScrollView>
       <FaqBot />
-    </View>
+    </SafeAreaView>
   );
 }
 
