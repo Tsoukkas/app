@@ -376,7 +376,6 @@ function ProfileScreen() {
   const { signOut } = useAuth();
   const { user, isLoaded } = useUser();
   const [uploading, setUploading] = useState(false);
-  const [forceRefresh, setForceRefresh] = useState(0);
 
   const insets = useSafeAreaInsets(); // ✅ αυτό δίνει top inset (notch)
 
@@ -386,8 +385,7 @@ function ProfileScreen() {
       ""
     : "";
   const email = isLoaded ? user?.primaryEmailAddress?.emailAddress || "" : "";
-  // Force refresh by using forceRefresh state to ensure we get latest from Clerk
-  const avatarUrl = isLoaded && forceRefresh >= 0 ? user?.imageUrl : null;
+  const avatarUrl = isLoaded ? user?.imageUrl : null;
 
   const handleChangeProfilePicture = async () => {
     try {
@@ -402,48 +400,19 @@ function ProfileScreen() {
         setUploading(true);
         try {
           const asset = result.assets[0];
-          
-          console.log("Selected asset:", {
-            uri: asset.uri,
-            type: asset.type,
-            width: asset.width,
-            height: asset.height,
-            fileName: asset.fileName,
-          });
-
-          // Convert to FormData which Clerk expects
-          const formData = new FormData();
-          
-          // Fetch the blob
           const response = await fetch(asset.uri);
           const blob = await response.blob();
 
-          console.log("Blob created:", { size: blob.size, type: blob.type });
+          // Create FormData to send the blob
+          const formData = new FormData();
+          formData.append("file", blob, asset.fileName || "profile.jpg");
 
-          // Append blob to FormData
-          const fileName = asset.fileName || `profile-${Date.now()}.jpg`;
-          formData.append("file", blob, fileName);
+          await user?.setProfileImage({
+            file: blob,
+          });
 
-          console.log("Uploading with FormData...");
-          
-          // Call setProfileImage with FormData
-          await user?.setProfileImage({ file: formData as any });
-          
-          console.log("setProfileImage call completed");
-
-          // Wait for Clerk to process
-          console.log("Waiting 2 seconds for Clerk to process...");
-          await new Promise((resolve) => setTimeout(resolve, 2000));
-
-          // Reload user - this should fetch fresh data from Clerk
-          console.log("Reloading user from Clerk...");
-          const reloadResponse = await user?.reload();
-          console.log("Reload response:", reloadResponse);
-          
-          console.log("User reloaded. New imageUrl:", user?.imageUrl);
-          
-          // Trigger component re-render to display new image
-          setForceRefresh((prev) => prev + 1);
+          // Refresh user data to get updated imageUrl
+          await user?.reload();
 
           Alert.alert(
             t("profile.success"),
@@ -453,7 +422,6 @@ function ProfileScreen() {
           );
         } catch (error) {
           console.error("Error uploading profile picture:", error);
-          console.error("Error details:", JSON.stringify(error, null, 2));
           Alert.alert(
             t("profile.error"),
             t("profile.pictureUploadFailed", {
@@ -569,10 +537,9 @@ function ProfileScreen() {
         <View style={profileStyles.profileCard}>
           <View style={profileStyles.avatarWrap}>
             <Image
-              key={forceRefresh}
               source={
                 avatarUrl
-                  ? { uri: `${avatarUrl}?t=${forceRefresh}` }
+                  ? { uri: avatarUrl }
                   : require("@/assets/images/Football4aChance_logo.png")
               }
               style={profileStyles.avatar}
